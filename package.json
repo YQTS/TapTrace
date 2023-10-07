@@ -1,0 +1,50 @@
+{
+  "name": "taptrace",
+  "version": "1.0.0",
+  "main": "dist-electron/main/index.js",
+  "description": "Easily track your daily tasks and goals. Cross off completed items, enjoy task completion, and make your life more orderly.",
+  "author": "缘起庭树 <554820955@qq.com>",
+  "license": "MIT",
+  "private": true,
+  "keywords": [
+    "electron",
+    "rollup",
+    "vite",
+    "vue3",
+    "vue"
+  ],
+  "debug": {
+    "env": {
+      "VITE_DEV_SERVER_URL": "http://127.0.0.1:3344/"
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit && vite build && electron-builder",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@iconify/json": "^2.2.125",
+    "@iconify/vue": "^4.1.1",
+    "@vitejs/plugin-vue": "^4.3.3",
+    "consola": "^3.2.3",
+    "electron": "^26.0.0",
+    "electron-builder": "^24.6.3",
+    "typescript": "^5.1.6",
+    "unplugin-auto-import": "^0.16.6",
+    "unplugin-vue-components": "^0.25.2",
+    "vite": "^4.4.9",
+    "vite-plugin-electron": "^0.14.0",
+    "vite-plugin-electron-renderer": "^0.14.5",
+    "vite-plugin-purge-icons": "^0.9.2",
+    "vite-plugin-style-import": "^2.0.0",
+    "vue": "^3.3.4",
+    "vue-tsc": "^1.8.8"
+  },
+  "dependencies": {
+    "@iconify/iconify": "^3.1.1",
+    "animate.css": "^4.1.1",
+    "element-plus": "^2.3.14",
+    "vue-router": "^4.2.5"
+  }
+}
