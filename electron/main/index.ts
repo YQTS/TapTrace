@@ -1,4 +1,4 @@
-import { app, BrowserWindow, shell, ipcMain } from 'electron'
+import { app, BrowserWindow, shell, ipcMain, Menu } from 'electron'
 import { release } from 'node:os'
 import { join } from 'node:path'
 
@@ -12,18 +12,20 @@ import { join } from 'node:path'
 // ├─┬ dist
 // │ └── index.html    > Electron-Renderer
 //
+
 process.env.DIST_ELECTRON = join(__dirname, '..')
 process.env.DIST = join(process.env.DIST_ELECTRON, '../dist')
 process.env.VITE_PUBLIC = process.env.VITE_DEV_SERVER_URL
   ? join(process.env.DIST_ELECTRON, '../public')
   : process.env.DIST
 
-// Disable GPU Acceleration for Windows 7
+// Disable GPU Acceleration for Windows 7 win7禁用gpu加速
 if (release().startsWith('6.1')) app.disableHardwareAcceleration()
 
-// Set application name for Windows 10+ notifications
+// Set application name for Windows 10+ notifications 应用的id
 if (process.platform === 'win32') app.setAppUserModelId(app.getName())
 
+// 是否取得了锁，如果没有取得锁，就可以假设另一个应用实例已经取得了锁并且仍旧在运行，并立即退出。
 if (!app.requestSingleInstanceLock()) {
   app.quit()
   process.exit(0)
@@ -36,7 +38,7 @@ if (!app.requestSingleInstanceLock()) {
 
 let win: BrowserWindow | null = null
 // Here, you can also use other preload
-const preload = join(__dirname, '../preload/index.js')
+const preload = join(__dirname, '../preload/index')
 const url = process.env.VITE_DEV_SERVER_URL
 const indexHtml = join(process.env.DIST, 'index.html')
 
@@ -44,6 +46,9 @@ async function createWindow() {
   win = new BrowserWindow({
     title: 'Main window',
     icon: join(process.env.VITE_PUBLIC, 'favicon.ico'),
+    width: 400,
+    height: 600,
+    // resizable: false,
     webPreferences: {
       preload,
       // Warning: Enable nodeIntegration and disable contextIsolation is not secure in production
@@ -57,21 +62,23 @@ async function createWindow() {
   if (process.env.VITE_DEV_SERVER_URL) { // electron-vite-vue#298
     win.loadURL(url)
     // Open devTool if the app is not packaged
-    win.webContents.openDevTools()
+    // win.webContents.openDevTools()
   } else {
     win.loadFile(indexHtml)
   }
 
-  // Test actively push message to the Electron-Renderer
-  win.webContents.on('did-finish-load', () => {
-    win?.webContents.send('main-process-message', new Date().toLocaleString())
-  })
+  Menu.setApplicationMenu(null)
+
+//  在主窗口加载完成后触发。
+  // win.webContents.on('did-finish-load', () => {
+  //   win?.webContents.send('main-process-message', new Date().toLocaleString())
+  // })
 
   // Make all links open with the browser, not with the application
-  win.webContents.setWindowOpenHandler(({ url }) => {
-    if (url.startsWith('https:')) shell.openExternal(url)
-    return { action: 'deny' }
-  })
+  // win.webContents.setWindowOpenHandler(({ url }) => {
+  //   if (url.startsWith('https:')) shell.openExternal(url)
+  //   return { action: 'deny' }
+  // })
   // win.webContents.on('will-navigate', (event, url) => { }) #344
 }
 

@@ -5,6 +5,17 @@ import electron from 'vite-plugin-electron'
 import renderer from 'vite-plugin-electron-renderer'
 import { notBundle } from 'vite-plugin-electron/plugin'
 import pkg from './package.json'
+import { resolve } from 'path'
+import PurgeIcons from 'vite-plugin-purge-icons'
+// import AutoImport from 'unplugin-auto-import/vite'
+// import Components from 'unplugin-vue-components/vite'
+// import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+import { createStyleImportPlugin, ElementPlusResolve } from 'vite-plugin-style-import'
+const root = process.cwd()
+
+const pathResolve = (dir: string) => {
+  return resolve(root, '.', dir)
+}
 
 // https://vitejs.dev/config/
 export default defineConfig(({ command }) => {
@@ -15,8 +26,27 @@ export default defineConfig(({ command }) => {
   const sourcemap = isServe || !!process.env.VSCODE_DEBUG
 
   return {
+    resolve: {
+      alias: [
+        {
+          find: /\@\//,
+          replacement: `${pathResolve('src')}/`
+        }
+      ]
+    },
     plugins: [
       vue(),
+      PurgeIcons({}),
+      createStyleImportPlugin({
+        resolves: [ElementPlusResolve()],
+        libs: [{
+          libraryName: 'element-plus',
+          esModule: true,
+          resolveStyle: (name) => {
+            return `element-plus/es/components/${name.substring(3)}/style/css`
+          }
+        }]
+      }),
       electron([
         {
           // Main process entry file of the Electron App.
