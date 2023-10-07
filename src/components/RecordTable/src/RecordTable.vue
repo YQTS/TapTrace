@@ -44,8 +44,9 @@ const props = defineProps({
 
 .recordContent {
     display: flex;
+    border: 1px rgba(0, 0, 0, 0.379) solid;
+    border-radius: 8px;
     width: 100%;
-    border: 1px red solid;
     height: 40px;
 }
 

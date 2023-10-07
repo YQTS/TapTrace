@@ -1,6 +1,9 @@
 <!--  -->
 <template>
     <div class="record">
+        <div class="btnArea">
+            <button class="newRecord">新建</button>
+        </div>
         <RecordTable :recordData="testData" />
     </div>
 </template>
@@ -32,5 +35,24 @@ const testData: RecordTableProps = {
 }
 </script>
 <style scoped>
-.record {}
+.record {
+    padding: 10px 5px;
+}
+
+.btnArea {
+    margin: 10px 0;
+}
+
+.newRecord {
+    width: 80px;
+    height: 40px;
+    font-size: 18px;
+    color: #f9f9f9;
+    background: var(--btn-main-color);
+    transition: background 0.2s;
+}
+
+.newRecord:hover {
+    background: var(--btn-main-hover-color);
+}
 </style>
