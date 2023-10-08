@@ -10,7 +10,12 @@ class Recordbase extends Dexie {
             record: '++id, *recordItems, createTime, endTime, lastModified, bg',
         })
 
+        this.version(2).stores({
+            record: '++id, *recordItems, createDate, createTime, endDate, endTime, lastModified, bg',
+        })
+
         this.record = this.table('record')
+        
     }
 }
 

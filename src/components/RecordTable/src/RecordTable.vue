@@ -1,9 +1,9 @@
 <!--  -->
 <template>
     <div class="recordTable">
-        <div class="recordContent" v-for="recordItem in recordData.recordItems" :key="recordItem.id">
+        <div class="recordContent" v-for="item in recordItems" :key="item.id">
             <div class="recordArea">
-                <div contenteditable="true" :class="['record', {}]" placeholder="记录一下..." v-html="recordItem.content"></div>
+                <div contenteditable="true" :class="['record', {}]" placeholder="记录一下..." v-html="item.content"></div>
             </div>
             <div class="btnArea">
                 <ElTooltip effect="dark" placement="bottom" content="编辑">
@@ -24,12 +24,12 @@
 import { Icon } from '@/components/Icon'
 import { ElTooltip } from 'element-plus';
 import { PropType } from 'vue';
-import type { RecordTableProps } from '@/types/Record'
+import type { RecordItem } from '@/types/Record'
 
 const props = defineProps({
-    recordData: {
-        type: Object as PropType<RecordTableProps>,
-        default: () => { { } }
+    recordItems: {
+        type: Array as PropType<RecordItem[]>,
+        default: () => { [] }
     }
 })
 

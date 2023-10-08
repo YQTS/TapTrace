@@ -4,35 +4,33 @@
         <div class="btnArea">
             <button class="newRecord">新建</button>
         </div>
-        <RecordTable :recordData="testData" />
+        <RecordTable :recordItems="recordData?.recordItems" />
     </div>
 </template>
 
 <script lang='ts' setup>
 import { RecordTable } from '@/components/RecordTable'
-import type { RecordTableProps } from '@/types/Record'
+import type { RecordTableProps, RecordItem } from '@/types/Record'
+import { useDexie } from '@/hooks/useDexie'
+import { useTodayDate } from '@/hooks/useTodayDate';
+import { ref } from 'vue'
+// import { computed } from 'vue';
+// import { unref } from 'vue';
 
-const testData: RecordTableProps = {
-    id: '1',
-    recordItems: [
-        {
-            id: '1',
-            content: '测试内容1 <div>nihoa</div>',
-            isDone: false
-        },
-        {
-            id: '2',
-            content: '测试内容2',
-            isDone: false
-        },
-        {
-            id: '3',
-            content: '测试内容3',
-            isDone: true
-        }
-    ],
-    createTime: '2023/10/7'
+const { getRecordData } = useDexie()
+const { date } = useTodayDate()
+
+
+const recordData = ref<RecordTableProps | null>(null)
+
+const initRecord = async () => {
+    recordData.value = await getRecordData(date)
 }
+
+initRecord()
+
+
+
 </script>
 <style scoped>
 .record {
