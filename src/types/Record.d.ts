@@ -1,5 +1,6 @@
 export type RecordItem = {
-    id: string,
+    id?: number,
+    recordId?: number,
     content?: string,
     isDone?: boolean,
     bgColor?: string,
@@ -8,7 +9,6 @@ export type RecordItem = {
 
 export type RecordTableProps = {
     id?: number,
-    recordItems?: RecordItem[],
     createDate?: string,
     createTime?: string,
     endDate?: string,

@@ -4,10 +4,13 @@ import 'animate.css'
 import App from './App.vue'
 import './samples/node-api'
 import { setupRouter } from './router'
+import { initRecord } from '@/utils/record'
 
-const setupAll = () => {
+
+const setupAll = async () => {
   const app = createApp(App)
 
+  await initRecord()
 
   setupRouter(app)
 

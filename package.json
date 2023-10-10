@@ -43,10 +43,12 @@
   },
   "dependencies": {
     "@iconify/iconify": "^3.1.1",
+    "@vueuse/rxjs": "^10.5.0",
     "animate.css": "^4.1.1",
     "dexie": "^3.2.4",
     "element-plus": "^2.3.14",
     "nanoid": "^5.0.1",
+    "rxjs": "^7.8.1",
     "vue-router": "^4.2.5"
   }
 }

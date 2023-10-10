@@ -1,37 +1,76 @@
 <!--  -->
 <template>
     <div class="recordTable">
-        <div class="recordContent" v-for="item in recordItems" :key="item.id">
-            <div class="recordArea">
-                <div contenteditable="true" :class="['record', {}]" placeholder="记录一下..." v-html="item.content"></div>
-            </div>
-            <div class="btnArea">
-                <ElTooltip effect="dark" placement="bottom" content="编辑">
-                    <Icon icon="carbon:edit" :size="15" />
-                </ElTooltip>
-                <ElTooltip effect="dark" placement="bottom" content="完成">
-                    <Icon icon="mdi:tick-outline" :size="15" />
-                </ElTooltip>
-                <ElTooltip effect="dark" placement="bottom" content="删除">
-                    <Icon icon="akar-icons:cross" :size="15" />
-                </ElTooltip>
-            </div>
+        <div class="recordContent" v-for="item in recordModel" :key="item.id">
+            <Transition appear enter-active-class="animate__animated animate__fadeInBottomLeft">
+                <div class="recordItem">
+                    <div :class="['recordArea']">
+                        <div contenteditable="true" :class="['record', {}]" placeholder="空白记录..." v-html="item.content">
+                        </div>
+                    </div>
+                    <div class="btnArea">
+                        <div>
+                            <ElTooltip effect="dark" placement="bottom" content="编辑">
+                                <Icon icon="carbon:edit" :size="15" />
+                            </ElTooltip>
+                        </div>
+                        <div v-show="!item.isDone">
+                            <ElTooltip effect="dark" placement="bottom" content="完成">
+                                <Icon icon="mdi:tick-outline" :size="15" @click="handleDone(item.id!)" />
+                            </ElTooltip>
+                        </div>
+                        <div>
+                            <ElTooltip effect="dark" placement="bottom" content="删除">
+                                <Icon icon="akar-icons:cross" :size="15" @click="handleDelete(item.id!)" />
+                            </ElTooltip>
+                        </div>
+                    </div>
+                </div>
+            </Transition>
         </div>
     </div>
 </template>
 
 <script lang='ts' setup>
 import { Icon } from '@/components/Icon'
-import { ElTooltip } from 'element-plus';
-import { PropType } from 'vue';
+import { ElMessageBox, ElTooltip } from 'element-plus';
+import { Ref } from 'vue';
 import type { RecordItem } from '@/types/Record'
+import { useObservable } from '@vueuse/rxjs'
+import { db } from '@/dexie';
+import { liveQuery } from 'dexie';
+import { deleteRecordItem, getRecordId } from '@/utils/record'
+import { computed } from 'vue';
+import { async } from 'rxjs';
 
-const props = defineProps({
-    recordItems: {
-        type: Array as PropType<RecordItem[]>,
-        default: () => { [] }
-    }
+
+const recordId = getRecordId()
+
+let recordItems = useObservable(
+    liveQuery(() => db.recordItems.where('recordId').equals(recordId!).toArray()) as any
+) as Ref<RecordItem[]>
+
+const recordModel = computed(() => {
+    return recordItems.value && recordItems.value.reduce((result: RecordItem[], item) => {
+        if (item.isDone) {
+            result.unshift(item)
+        } else {
+            result.push(item)
+        }
+        return result
+    }, [])
 })
+
+
+const handleDone = async (itemId: number) => {
+    await db.recordItems.where('id').equals(itemId).modify(item => {
+        item.isDone = true
+    })
+}
+
+const handleDelete = async (itemId: number) => {
+    await deleteRecordItem(itemId)
+}
 
 </script>
 <style scoped>
@@ -43,9 +82,6 @@ const props = defineProps({
 }
 
 .recordContent {
-    display: flex;
-    border: 1px rgba(0, 0, 0, 0.379) solid;
-    border-radius: 8px;
     width: 100%;
     height: 40px;
 }
@@ -75,6 +111,14 @@ const props = defineProps({
     font-size: large;
     padding: 0 5px;
     white-space: nowrap;
+}
+
+.recordItem {
+    display: flex;
+    border: 1px rgba(0, 0, 0, 0.379) solid;
+    border-radius: 8px;
+    width: 100%;
+    height: 100%;
 }
 
 [contenteditable=true]:empty::before {

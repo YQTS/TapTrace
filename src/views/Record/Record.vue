@@ -2,32 +2,25 @@
 <template>
     <div class="record">
         <div class="btnArea">
-            <button class="newRecord">新建</button>
+            <button class="newRecord" @click="handleAddRecordItem">新建</button>
         </div>
-        <RecordTable :recordItems="recordData?.recordItems" />
+        <RecordTable />
     </div>
 </template>
 
 <script lang='ts' setup>
 import { RecordTable } from '@/components/RecordTable'
-import type { RecordTableProps, RecordItem } from '@/types/Record'
-import { useDexie } from '@/hooks/useDexie'
-import { useTodayDate } from '@/hooks/useTodayDate';
-import { ref } from 'vue'
-// import { computed } from 'vue';
-// import { unref } from 'vue';
+import { createRecordItem, getRecordId, addRecordItem } from '@/utils/record'
 
-const { getRecordData } = useDexie()
-const { date } = useTodayDate()
-
-
-const recordData = ref<RecordTableProps | null>(null)
-
-const initRecord = async () => {
-    recordData.value = await getRecordData(date)
+const handleAddRecordItem = async () => {
+    const newRecordItem = createRecordItem(getRecordId(), false)
+    try {
+        await addRecordItem(newRecordItem)
+    } catch (error) {
+        Promise.reject(error)
+        throw new Error('Failed to update data')
+    }
 }
-
-initRecord()
 
 
 
