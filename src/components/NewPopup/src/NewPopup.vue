@@ -1,32 +1,52 @@
 <!-- 新建弹窗 -->
 <template>
     <dialog ref="newPopupRef" class="popup">
-        <div contenteditable="true" class="content" placeholder="准备要做的事..." />
+        <div contenteditable="true" class="content" placeholder="准备要做的事..." ref="contentRef" />
         <div class="btns">
-            <button>确定</button>
-            <button @click="handlerClick">取消</button>
+            <button @click="handleConfirm">确定</button>
+            <button @click="handleClose">取消</button>
         </div>
     </dialog>
 </template>
 
 <script lang='ts' setup>
 import { ref } from 'vue';
+import { getRecordItem } from '@/utils/record'
 
 const newPopupRef = ref<HTMLDialogElement | null>(null)
 
-const handlerPop = () => {
+const contentRef = ref<Elref>(null)
+
+const handlePop = async (itemId: number) => {
+
+    const item = await getRecordItem(itemId)
+
+    console.log(item)
+
+    if (contentRef.value && item?.content)
+        contentRef.value.innerHTML = item?.content
+
     if (newPopupRef.value) {
         newPopupRef.value.showModal()
     }
 }
 
-const handlerClick = () => {
-    if (newPopupRef.value)
+const handleClose = () => {
+    if (newPopupRef.value) {
         newPopupRef.value.close()
+    }
+    if (contentRef.value) {
+        contentRef.value.innerHTML = ''
+    }
+
+}
+
+const handleConfirm = () => {
+
 }
 
 defineExpose({
-    handlerPop
+    handlePop
 })
 
 </script>

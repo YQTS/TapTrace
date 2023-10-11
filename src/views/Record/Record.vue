@@ -13,7 +13,7 @@ import { RecordTable } from '@/components/RecordTable'
 import { createRecordItem, getRecordId, addRecordItem } from '@/utils/record'
 
 const handleAddRecordItem = async () => {
-    const newRecordItem = createRecordItem(getRecordId(), false)
+    const newRecordItem = createRecordItem(getRecordId(), '', false)
     try {
         await addRecordItem(newRecordItem)
     } catch (error) {
