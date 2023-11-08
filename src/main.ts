@@ -5,6 +5,7 @@ import App from './App.vue'
 import './samples/node-api'
 import { setupRouter } from './router'
 import { initRecord } from '@/utils/record'
+import '@/plugins/tailwindcss/tailwindcss.css'
 
 
 const setupAll = async () => {

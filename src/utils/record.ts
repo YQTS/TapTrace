@@ -58,7 +58,6 @@ export const getRecordItems = async (recordId: number) => {
 }
 
 export const updateItemContent = async (itemId: number, content: string) => {
-    console.log(itemId, content)
     return await db.recordItems.update(itemId, {
         content: content
     })

@@ -18,6 +18,9 @@
   --icon-hover-light-color: #d5d5d5;
   --btn-main-color: #39C5BB;
   --btn-main-hover-color: #2f9f98;
+  --btn-light-color: #eeeeee;
+  --btn-light-hover-color: #d5d5d5;
+
 }
 
 
@@ -32,18 +35,13 @@ h1 {
 }
 
 button {
+  width: 80px;
+  height: 40px;
+  font-size: 18px;
   border-radius: 8px;
   border: 1px solid transparent;
   padding: 0.3em 0.6em;
-  font-size: 0.8em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
   cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #39C5BB;
 }
 /* button:focus,
 button:focus-visible {

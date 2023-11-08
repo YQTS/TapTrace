@@ -3,12 +3,16 @@
     <div class="record">
         <div class="btnArea">
             <button class="newRecord" @click="handleAddRecordItem">新建</button>
+            <div class=" flex items-center">
+                <IconButton icon="fontisto:date" :size="20" content="往期记录"></IconButton>
+            </div>
         </div>
         <RecordTable />
     </div>
 </template>
 
 <script lang='ts' setup>
+import { IconButton } from '@/components/IconButton';
 import { RecordTable } from '@/components/RecordTable'
 import { createRecordItem, getRecordId, addRecordItem } from '@/utils/record'
 
@@ -22,6 +26,10 @@ const handleAddRecordItem = async () => {
     }
 }
 
+const handlePastRecord = () => {
+
+}
+
 
 
 </script>
@@ -31,13 +39,12 @@ const handleAddRecordItem = async () => {
 }
 
 .btnArea {
+    display: flex;
+    gap: 20px;
     margin: 10px 0;
 }
 
 .newRecord {
-    width: 80px;
-    height: 40px;
-    font-size: 18px;
     color: #f9f9f9;
     background: var(--btn-main-color);
     transition: background 0.2s;
@@ -45,5 +52,14 @@ const handleAddRecordItem = async () => {
 
 .newRecord:hover {
     background: var(--btn-main-hover-color);
+}
+
+.pastRecord {
+    background: var(--btn-light-color);
+    transition: background 0.2s;
+}
+
+.pastRecord:hover {
+    background: var(--btn-light-hover-color);
 }
 </style>

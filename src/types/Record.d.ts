@@ -1,5 +1,5 @@
 export type RecordItem = {
-    id?: number,
+    id: number,
     recordId?: number,
     content?: string,
     isDone?: boolean,
