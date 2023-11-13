@@ -3,7 +3,7 @@
     <div>
         <template class="recordTable" v-show="showContent">
             <div class="recordContent" v-for="item in doneRecord" :key="item.id">
-                <Transition appear enter-active-class="animate__animated animate__fadeInBottomLeft">
+                <Transition appear enter-active-class="animate__animated animate__jackInTheBox">
                     <div class="recordItem" @mouseenter="handleMouseenter(item.id)" @mouseleave="handleMouseleave">
                         <div class="recordArea" :class="{ 'slipLeft': hoverIndex === item.id }">
                             <div contenteditable="true" class="record" placeholder="空白记录..." v-html="item.content"
@@ -18,7 +18,7 @@
                 </Transition>
             </div>
             <div class="recordContent" v-for="item in todoRecord" :key="item.id">
-                <Transition appear enter-active-class="animate__animated animate__fadeInBottomLeft">
+                <Transition appear enter-active-class="animate__animated animate__jackInTheBox">
                     <div class="recordItem" @mouseenter="handleMouseenter(item.id)" @mouseleave="handleMouseleave">
                         <div class="recordArea" :class="{ 'slipLeft': hoverIndex === item.id }">
                             <div contenteditable="true" class="record" placeholder="空白记录..." v-html="item.content"
@@ -49,21 +49,45 @@ import { IconButton } from '@/components/IconButton';
 import { Mask } from '@/components/Mask'
 import { ElEmpty } from 'element-plus';
 import { EditPop } from '@/components/EditPop'
-import { Ref, ref } from 'vue';
+import { Ref, ref, watch } from 'vue';
 import type { RecordItem } from '@/types/Record'
 import { useObservable } from '@vueuse/rxjs'
 import { db } from '@/dexie';
 import { liveQuery } from 'dexie';
-import { deleteRecordItem, getRecordId, updateItemContent, getRecordItem } from '@/utils/record'
+import { deleteRecordItem, getRecordId, updateItemContent, getRecordItem, getRecordItems } from '@/utils/record'
 import { computed } from 'vue';
 import { debounce } from '@/utils/debounce';
 
+const props = defineProps({
+    recordIdProp: {
+        type: Number,
+        default: () => getRecordId()
+    }
+})
 
-const recordId = getRecordId()
+let recordItems = ref<RecordItem[]>([])
 
-let recordItems = useObservable(
-    liveQuery(() => db.recordItems.where('recordId').equals(recordId!).toArray()) as any
-) as Ref<RecordItem[]>
+const refreshRecordItems = async () => {
+    recordItems.value = await getRecordItems(props.recordIdProp)
+}
+
+defineExpose({
+    refreshRecordItems
+})
+
+watch(
+    () => props.recordIdProp,
+    async () => {
+        if (props.recordIdProp === -1) {
+            recordItems.value = []
+        } else {
+            await refreshRecordItems()
+        }
+    },
+    {
+        immediate: true
+    }
+)
 
 const doneRecord = computed(() => recordItems.value && recordItems.value.filter(r => r.isDone))
 
@@ -73,10 +97,12 @@ const handleDone = async (itemId: number) => {
     await db.recordItems.where('id').equals(itemId).modify(item => {
         item.isDone = true
     })
+    await refreshRecordItems()
 }
 
 const handleDelete = async (itemId: number) => {
     await deleteRecordItem(itemId)
+    await refreshRecordItems()
 }
 
 const showContent = computed(() => {
@@ -91,8 +117,9 @@ const handleEdit = async (itemId: number) => {
     editRecord.value = { ...record }
     showEdit.value = true
 }
-const handleClosePop = () => {
+const handleClosePop = async () => {
     showEdit.value = false
+    await refreshRecordItems()
 }
 
 

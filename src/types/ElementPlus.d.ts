@@ -1,0 +1,1 @@
+export type ElementPlusSize = 'default' | 'small' | 'large'
