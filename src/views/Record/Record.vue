@@ -3,7 +3,7 @@
     <div class="record">
         <div class="btnArea">
             <IconButton icon="basil:add-outline" content="新增记事" :size="25" @click="handleAddRecordItem" />
-            <DatePicker v-if="showDatePicker" size="small" :dateValue="date" @changeDate="handleDate" />
+            <DatePicker v-if="showDatePicker" size="small" :dateValue="recordDate" @changeDate="handleDate" />
         </div>
         <RecordTable ref="RecordTableRef" :recordIdProp="recordIdProp" />
     </div>
@@ -16,6 +16,8 @@ import { RecordTable } from '@/components/RecordTable'
 import { createRecordItem, getRecordId, addRecordItem, getRecordByDate, createRecord } from '@/utils/record'
 import { useTodayDate } from '@/utils/date'
 import { ref } from 'vue';
+import { nextTick } from 'vue';
+import { provide } from 'vue';
 
 const { date } = useTodayDate()
 
@@ -25,22 +27,23 @@ const recordIdProp = ref(getRecordId())
 
 const showDatePicker = ref(true)
 
+const refreshDatePicker = () => {
+    showDatePicker.value = false
+    nextTick(() => {
+        showDatePicker.value = true
+    })
+}
+
 const handleDate = async (value: string) => {
     // value为传入的日期
     recordDate.value = value
     const record = await getRecordByDate(value)
-    console.log('在这')
     if (record === void 0) {
         const newRecordId = await createRecord(value)
-        console.log('newId', newRecordId)
         recordIdProp.value = newRecordId!
-        showDatePicker.value = false
     } else {
         recordIdProp.value = record.id!
     }
-    setTimeout(() => {
-        showDatePicker.value = true
-    }, 0);
 }
 
 const RecordTableRef = ref<typeof RecordTable>()
@@ -49,6 +52,7 @@ const handleAddRecordItem = async () => {
     const newRecordItem = createRecordItem(recordIdProp.value, '', false)
     try {
         await addRecordItem(newRecordItem)
+        refreshDatePicker()
         await RecordTableRef.value!.refreshRecordItems()
     } catch (error) {
         Promise.reject(error)
@@ -56,9 +60,7 @@ const handleAddRecordItem = async () => {
     }
 }
 
-const handlePastRecord = () => {
-
-}
+provide('refreshDatePicker', refreshDatePicker)
 
 
 

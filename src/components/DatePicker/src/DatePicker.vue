@@ -23,7 +23,7 @@
 import { ElementPlusSize } from '@/types/ElementPlus';
 import { ElDatePicker } from 'element-plus';
 import { PropType, ref, watch, unref } from 'vue';
-import { getRecordDates } from '@/utils/record'
+import { getRecordDatesWithItems } from '@/utils/record'
 import { onMounted } from 'vue';
 
 const props = defineProps({
@@ -64,8 +64,7 @@ const disabledDate = (time: Date) => {
 }
 
 onMounted(async () => {
-    console.log('触发了')
-    recordDates.value = await getRecordDates()
+    recordDates.value = await getRecordDatesWithItems()
 })
 
 </script>

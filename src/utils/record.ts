@@ -1,4 +1,4 @@
-import { RecordItem } from "@/types/Record"
+import { RecordItem, RecordTableProps } from "@/types/Record"
 import { db } from "@/dexie"
 import { useTodayDate } from './date'
 
@@ -93,12 +93,18 @@ export const deleteRecordItem = async (id: number) => {
     return await db.recordItems.delete(id)
 }
 
-export const getRecordDates = async () => {
+export const getRecordDatesWithItems = async () => {
     const records = await db.record.toArray()
     const arr: string[] = []
-    records.map(r => {
-        if (r.createDate)
+    let itemNum: number
+    let r: RecordTableProps
+    for (let i = 0; i < records.length; i++) {
+        r = records[i]
+        itemNum = await db.recordItems.where('recordId').equals(r.id!).count()
+        if (r.createDate && itemNum !== 0) {
             arr.push(r.createDate)
-    })
+        }
+
+    }
     return arr
 }

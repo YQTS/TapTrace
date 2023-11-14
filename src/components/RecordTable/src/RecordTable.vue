@@ -2,21 +2,7 @@
 <template>
     <div>
         <template class="recordTable" v-show="showContent">
-            <div class="recordContent" v-for="item in doneRecord" :key="item.id">
-                <Transition appear enter-active-class="animate__animated animate__jackInTheBox">
-                    <div class="recordItem" @mouseenter="handleMouseenter(item.id)" @mouseleave="handleMouseleave">
-                        <div class="recordArea" :class="{ 'slipLeft': hoverIndex === item.id }">
-                            <div contenteditable="true" class="record" placeholder="空白记录..." v-html="item.content"
-                                @blur="handleSync($event, item.id!)" spellcheck="false">
-                            </div>
-                        </div>
-                        <div class="btnArea">
-                            <IconButton icon="carbon:edit" :size="15" content="编辑" @click="handleEdit(item.id)" />
-                            <IconButton icon="akar-icons:cross" :size="15" content="删除" @click="handleDelete(item.id)" />
-                        </div>
-                    </div>
-                </Transition>
-            </div>
+            <span v-show="todoRecord.length" class=" font-thin text-sm">待完成</span>
             <div class="recordContent" v-for="item in todoRecord" :key="item.id">
                 <Transition appear enter-active-class="animate__animated animate__jackInTheBox">
                     <div class="recordItem" @mouseenter="handleMouseenter(item.id)" @mouseleave="handleMouseleave">
@@ -28,6 +14,22 @@
                         <div class="btnArea">
                             <IconButton icon="mdi:tick-outline" :size="15" content="完成" @click="handleDone(item.id)"
                                 v-show="!item.isDone" />
+                            <IconButton icon="carbon:edit" :size="15" content="编辑" @click="handleEdit(item.id)" />
+                            <IconButton icon="akar-icons:cross" :size="15" content="删除" @click="handleDelete(item.id)" />
+                        </div>
+                    </div>
+                </Transition>
+            </div>
+            <span v-show="doneRecord.length" class=" font-thin text-sm text-[var(--theme-color)]">已完成</span>
+            <div class="recordContent" v-for="item in doneRecord" :key="item.id">
+                <Transition appear enter-active-class="animate__animated animate__jackInTheBox">
+                    <div class="recordItem" @mouseenter="handleMouseenter(item.id)" @mouseleave="handleMouseleave">
+                        <div class="recordArea" :class="{ 'slipLeft': hoverIndex === item.id }">
+                            <div contenteditable="true" class="record" placeholder="空白记录..." v-html="item.content"
+                                @blur="handleSync($event, item.id!)" spellcheck="false">
+                            </div>
+                        </div>
+                        <div class="btnArea">
                             <IconButton icon="carbon:edit" :size="15" content="编辑" @click="handleEdit(item.id)" />
                             <IconButton icon="akar-icons:cross" :size="15" content="删除" @click="handleDelete(item.id)" />
                         </div>
@@ -57,6 +59,7 @@ import { liveQuery } from 'dexie';
 import { deleteRecordItem, getRecordId, updateItemContent, getRecordItem, getRecordItems } from '@/utils/record'
 import { computed } from 'vue';
 import { debounce } from '@/utils/debounce';
+import { inject } from 'vue';
 
 const props = defineProps({
     recordIdProp: {
@@ -64,6 +67,8 @@ const props = defineProps({
         default: () => getRecordId()
     }
 })
+
+const refreshDatePicker = inject<Function>('refreshDatePicker')
 
 let recordItems = ref<RecordItem[]>([])
 
@@ -77,10 +82,8 @@ defineExpose({
 
 watch(
     () => props.recordIdProp,
-    async () => {
-        if (props.recordIdProp === -1) {
-            recordItems.value = []
-        } else {
+    async (newVal, oldVal) => {
+        if (newVal !== oldVal) {
             await refreshRecordItems()
         }
     },
@@ -103,6 +106,9 @@ const handleDone = async (itemId: number) => {
 const handleDelete = async (itemId: number) => {
     await deleteRecordItem(itemId)
     await refreshRecordItems()
+    if (refreshDatePicker) {
+        refreshDatePicker()
+    }
 }
 
 const showContent = computed(() => {
