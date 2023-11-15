@@ -2,9 +2,9 @@
 <template>
     <div class=" w-96 h-80 sm:w-2/3 sm:h-2/3 bg-white rounded-lg">
         <div class=" w-full h-1/6 flex p-3 gap-5">
-            <IconButton icon="mdi:color" :size="25" content="背景" />
+            <ColorPicker ref="ColorPickerRef" @changeBgColor="handleBgColor"/>
         </div>
-        <div class=" w-full h-4/6 p-3 border-y-2 overflow-auto">
+        <div ref="editParentRef" class=" w-full h-4/6 p-3 border-y-2 overflow-auto">
             <div class=" w-full h-full outline-none" contenteditable="true" placeholder="空白记录..." v-html="showContent"
                 ref="editRef" spellcheck="false">
             </div>
@@ -19,9 +19,10 @@
 </template>
 
 <script lang='ts' setup>
+import { ColorPicker } from '@/components/ColorPicker'
 import { IconButton } from '@/components/IconButton';
 import { PropType } from 'vue';
-import { updateItemContent } from '@/utils/record'
+import { updateItemContent, updateItemBgColor } from '@/utils/record'
 import { watch, ref } from 'vue';
 import { unref } from 'vue';
 
@@ -34,14 +35,21 @@ const props = defineProps({
 
 const showContent = ref('')
 
-const editRef = ref<Elref>()
+const bgColor = ref<string>('')
+
+const ColorPickerRef = ref<typeof ColorPicker>()
 
 watch(
     () => props.record,
     () => {
-        props.record.content ?
-            showContent.value = props.record.content :
-            undefined
+        if (props.record.content) {
+            showContent.value = props.record.content
+        }
+        if (props.record.bgColor) {
+            bgColor.value = props.record.bgColor
+            ColorPickerRef.value!.color = props.record.bgColor
+        }
+
     },
     {
         immediate: true,
@@ -51,17 +59,48 @@ watch(
 
 
 const emits = defineEmits(['closeEdit'])
+
+const editRef = ref<Elref>()
+
 const handleCancel = () => {
     showContent.value = ''
+    bgColor.value = ''
     emits('closeEdit')
 }
 
 const confirmEdit = async () => {
     showContent.value = editRef.value?.innerHTML || ''
     await updateItemContent(props.record.id, unref(showContent))
+    await updateItemBgColor(props.record.id, unref(bgColor))
     showContent.value = ''
+    bgColor.value = ''
     emits('closeEdit')
 }
+
+const handleBgColor = (value: string | null) => {
+    if (value) {
+        bgColor.value = value
+    } else {
+        bgColor.value = 'rgba(255, 255, 255, 1)'
+    }
+}
+
+
+const editParentRef = ref<Elref>()
+
+watch(
+    () => bgColor.value,
+    () => {
+        if (editParentRef.value) {
+            editParentRef.value.style.backgroundColor = bgColor.value
+            ColorPickerRef.value!.color = bgColor.value
+        }
+    },
+    {
+        immediate: true,
+        deep: true
+    }
+)
 
 </script>
 <style scoped>

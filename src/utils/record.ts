@@ -52,12 +52,12 @@ export const getRecordId = (): number => {
     return JSON.parse(localStorage.getItem('recordId')!)
 }
 
-export const createRecordItem = (recordId: number, content: string, isDone?: boolean, bg?: string, bgImg?: string ): RecordItem => {
+export const createRecordItem = (recordId: number, content: string, isDone?: boolean, bgColor?: string, bgImg?: string ): any => {
     const recordItem = {
         recordId,
         isDone,
         content,
-        bg,
+        bgColor,
         bgImg
     }
     return recordItem
@@ -85,7 +85,19 @@ export const getRecordByDate = async (date: string) => {
 
 export const updateItemContent = async (itemId: number, content: string) => {
     return await db.recordItems.update(itemId, {
-        content: content
+        content
+    })
+}
+
+export const updateItemBgColor = async (itemId: number, bgColor: string) => {
+    return await db.recordItems.update(itemId, {
+        bgColor
+    })
+}
+
+export const updateItemBgImg = async (itemId: number, bgImg: string) => {
+    return await db.recordItems.update(itemId, {
+        bgImg
     })
 }
 

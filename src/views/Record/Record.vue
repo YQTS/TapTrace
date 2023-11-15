@@ -49,7 +49,7 @@ const handleDate = async (value: string) => {
 const RecordTableRef = ref<typeof RecordTable>()
 
 const handleAddRecordItem = async () => {
-    const newRecordItem = createRecordItem(recordIdProp.value, '', false)
+    const newRecordItem = createRecordItem(recordIdProp.value, '', false, 'rgba(255,255,255,1)')
     try {
         await addRecordItem(newRecordItem)
         refreshDatePicker()

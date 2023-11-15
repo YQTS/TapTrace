@@ -6,7 +6,7 @@
             <div class="recordContent" v-for="item in todoRecord" :key="item.id">
                 <Transition appear enter-active-class="animate__animated animate__jackInTheBox">
                     <div class="recordItem" @mouseenter="handleMouseenter(item.id)" @mouseleave="handleMouseleave">
-                        <div class="recordArea" :class="{ 'slipLeft': hoverIndex === item.id }">
+                        <div class="recordArea" :style="{backgroundColor: item.bgColor}" :class="{ 'slipLeft': hoverIndex === item.id }">
                             <div contenteditable="true" class="record" placeholder="空白记录..." v-html="item.content"
                                 @blur="handleSync($event, item.id!)" spellcheck="false">
                             </div>
@@ -24,7 +24,7 @@
             <div class="recordContent" v-for="item in doneRecord" :key="item.id">
                 <Transition appear enter-active-class="animate__animated animate__jackInTheBox">
                     <div class="recordItem" @mouseenter="handleMouseenter(item.id)" @mouseleave="handleMouseleave">
-                        <div class="recordArea" :class="{ 'slipLeft': hoverIndex === item.id }">
+                        <div class="recordArea" :style="{backgroundColor: item.bgColor}" :class="{ 'slipLeft': hoverIndex === item.id }">
                             <div contenteditable="true" class="record" placeholder="空白记录..." v-html="item.content"
                                 @blur="handleSync($event, item.id!)" spellcheck="false">
                             </div>
@@ -150,6 +150,7 @@ const handleMouseleave = () => {
     flex-direction: column;
     gap: 20px;
     width: 100%;
+    padding-bottom: 30px;
 }
 
 .recordContent {
